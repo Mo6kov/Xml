@@ -37,3 +37,30 @@ with demo4 as(
    from demo4 s
         ,table(XMLSequence(s.xml.extract('master/details/detail'))) dtl
         ,table(XMLSequence(value(dtl).extract('detail/sub_details/sub_detail')))(+) subdtl;
+        
+        
+        WITH tmp AS
+  (
+    SELECT
+      '<Root>
+        <Data>
+          <Name>Data1</Name>
+          <Value>Data1_1</Value>
+        </Data>
+        <Data>
+          <Name>Data2</Name>
+          <Value>Data2_2</Value>
+        </Data>
+      </Root>' x
+    FROM
+      dual
+  )
+
+SELECT
+  extractvalue(VALUE(b),'Data/Name') name,
+  extractvalue(VALUE(b),'Data/Value') value
+FROM
+  tmp,
+  TABLE(xmlsequence(extract(XMLTYPE(tmp.x),'Root/Data'))) b
+WHERE
+  extractvalue(VALUE(b),'Data/Name') = 'Data2'
